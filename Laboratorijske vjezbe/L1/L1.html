@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <script src="L1.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="zadatak1" width="200" height="200" style="border:1px solid black;">
+    </canvas>
+
+    <script>
+        const canvas = document.getElementById("zadatak1");
+        const ctx = canvas.getContext("2d");
+
+        //drawGridLine(ctx, 30,30);
+        //drawGridRect(ctx, 30,30);
+        drawGridCircle(ctx, 30,30);
+    </script>
+
+    <canvas id="zadatak2" width="200" height="200" style="border:1px solid black;">
+
+    </canvas>
+    <script>
+        const canvas2 = document.getElementById("zadatak2");
+        const ctx2 = canvas2.getContext("2d");
+        drawSquare(ctx2, 50, 50, 100)
+    </script>
+
+    <canvas id="zadatak3" width="200" height="200" style="border:1px solid black;">
+
+    </canvas>
+    <script>
+        const canvas3 = document.getElementById("zadatak3");
+        const ctx3 = canvas3.getContext("2d");
+        drawQuad(ctx3, 40,40,100);
+    </script>
+
+    <canvas id="zadatak4" width="500" height="500" style="border:1px solid black;">
+
+    </canvas>
+    <script>
+        const canvas4 = document.getElementById("zadatak4");
+        const ctx4 = canvas4.getContext("2d");
+        TriangleStrip(ctx4, 20, 20);
+    </script>
+
+    
+    <canvas id="zadatak5" width="300" height="300" style="border:1px solid black;">
+
+    </canvas>
+    <script>
+        const canvas5 = document.getElementById("zadatak5");
+        const ctx5 = canvas5.getContext("2d");
+        TriangleFan(ctx5, 150, 150, 25);
+    </script>
+</body>
+</html>
