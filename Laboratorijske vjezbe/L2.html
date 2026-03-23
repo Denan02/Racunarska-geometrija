@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <script src="L2.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <input type="file" id="fileInput">
+    <canvas id="zadatak1" width="200" height="200" style="border:1px solid black;">
+    </canvas>
+    <script>
+        const canvas = document.getElementById("zadatak1");
+        const ctx = canvas.getContext("2d");
+
+        canvas.addEventListener("click", function(event) {
+            const rect = canvas.getBoundingClientRect();
+
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            OnClick(ctx, x,y);
+        });
+
+        document.getElementById("fileInput").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            const tekst = event.target.result;
+            obradiFajl(ctx, tekst);
+        };
+
+        reader.readAsText(file);
+});
+    </script>
+</body>
+</html>
