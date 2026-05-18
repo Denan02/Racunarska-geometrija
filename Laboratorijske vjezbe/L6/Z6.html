@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <title>Računarska geometrija - Naivna pretraga opsega</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f0f2f5; margin-top: 30px; }
+        canvas { border: 2px solid #333; background-color: #ffffff; display: block; margin: 20px auto; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+        button { padding: 12px 24px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <h2>Naivna pravougaona pretraga opsega (Brute Force)</h2>
+    <p>Pritisnite dugme ispod kako biste generisali tačke i pravougaonik. Rezultati se ispisuju u konzoli (F12).</p>
+    
+    <button id="btnPokreni">Generiši i pokreni</button>
+    <canvas id="geometrijaCanvas" width="700" height="450"></canvas>
+
+    <script>
+        const canvas = document.getElementById('geometrijaCanvas');
+        const ctx = canvas.getContext('2d');
+        const btn = document.getElementById('btnPokreni');
+
+        btn.addEventListener('click', () => {
+            // Očisti canvas i konzolu prije svakog klika
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            console.clear();
+
+            // (a) Nasumice generisati 100 tačaka unutar granica canvasa
+            const tacke = [];
+            for (let i = 0; i < 100; i++) {
+                tacke.push({
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: Math.random() * (canvas.height - 40) + 20
+                });
+            }
+
+            // (b) Nasumice generisati pravougaonik (R) koji pokriva dio prostora
+            const x1 = Math.random() * (canvas.width * 0.5);
+            const y1 = Math.random() * (canvas.height * 0.5);
+            const x2 = x1 + (Math.random() * (canvas.width * 0.4) + 100);
+            const y2 = y1 + (Math.random() * (canvas.height * 0.4) + 100);
+
+            const R = { xMin: x1, xMax: x2, yMin: y1, yMax: y2 };
+
+            // Nacrtaj generisani pravougaonik (plavom bojom)
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(R.xMin, R.yMin, R.xMax - R.xMin, R.yMax - R.yMin);
+
+            const tackeUnutar = [];
+            const tackeVan = [];
+
+            // (c) Primijeniti brute force algoritam (iz predavanja)
+            // Provjera uslova: P.x >= R.x' && P.x <= R.x'' && P.y >= R.y' && P.y <= R.y''
+            for (let i = 0; i < tacke.length; i++) {
+                const P = tacke[i];
+                if (P.x >= R.xMin && P.x <= R.xMax && P.y >= R.yMin && P.y <= R.yMax) {
+                    tackeUnutar.push(P);
+                } else {
+                    tackeVan.push(P);
+                }
+            }
+
+            // (d) Vizuelno obojiti tačke i ispisati rezultate u konzolu
+            
+            // Crtanje tačaka koje su UNUTAR (Zelena boja)
+            ctx.fillStyle = 'green';
+            tackeUnutar.forEach(P => {
+                ctx.beginPath();
+                ctx.arc(P.x, P.y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // Crtanje tačaka koje su VAN (Crvena boja)
+            ctx.fillStyle = 'red';
+            tackeVan.forEach(P => {
+                ctx.beginPath();
+                ctx.arc(P.x, P.y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // Ispis rezultata u konzoli
+            console.log(`%c[REZULTAT] Broj tačaka unutar pravougaonika: ${tackeUnutar.length}`, 'font-weight: bold; color: green;');
+            console.log(`Broj tačaka van pravougaonika: ${tackeVan.length}`);
+            console.log("Spisak tačaka koje se nalaze UNUTAR pravougaonika:");
+            
+            tackeUnutar.forEach((P, index) => {
+                console.log(`Tačka ${index + 1}: X = ${P.x.toFixed(2)}, Y = ${P.y.toFixed(2)}`);
+            });
+        });
+    </script>
+</body>
+</html>
