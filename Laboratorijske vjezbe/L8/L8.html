@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Delaunay Triangulacija</title>
+</head>
+<body>
+
+    <canvas id="canvas" width="800" height="600" style="border: 1px solid black;"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let tacke = [];
+        let duzi = [];
+
+        canvas.addEventListener('click', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            tacke.push({ x: x, y: y });
+            iscrtaj();
+        });
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 't' || event.key === 'T') {
+                izvrsiBruteForceDelaunay();
+                iscrtaj();
+            } else if (event.key === 'c' || event.key === 'C') {
+                tacke = [];
+                duzi = [];
+                iscrtaj();
+            }
+        });
+
+        function opisanaKruznica(p1, p2, p3) {
+            const d = 2 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y));
+            if (Math.abs(d) < 1e-6) return null;
+
+            const ux = ((p1.x**2 + p1.y**2) * (p2.y - p3.y) + (p2.x**2 + p2.y**2) * (p3.y - p1.y) + (p3.x**2 + p3.y**2) * (p1.y - p2.y)) / d;
+            const uy = ((p1.x**2 + p1.y**2) * (p3.x - p2.x) + (p2.x**2 + p2.y**2) * (p1.x - p3.x) + (p3.x**2 + p3.y**2) * (p2.x - p1.x)) / d;
+            const rKvadrat = (p1.x - ux)**2 + (p1.y - uy)**2;
+
+            return { cx: ux, cy: uy, r2: rKvadrat };
+        }
+
+        function izvrsiBruteForceDelaunay() {
+            duzi = [];
+            const n = tacke.length;
+
+            if (n < 3) return;
+
+            let dodaneDuzi = new Set();
+
+            function dodajDuz(i, j) {
+                const kljuc = i < j ? `${i}-${j}` : `${j}-${i}`;
+                if (!dodaneDuzi.has(kljuc)) {
+                    dodaneDuzi.add(kljuc);
+                    duzi.push({ p1: tacke[i], p2: tacke[j] });
+                }
+            }
+
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    for (let k = j + 1; k < n; k++) {
+                        
+                        const kruznica = opisanaKruznica(tacke[i], tacke[j], tacke[k]);
+                        if (!kruznica) continue;
+
+                        let jesuLiSveVan = true;
+
+                        for (let m = 0; m < n; m++) {
+                            if (m === i || m === j || m === k) continue;
+
+                            const distKvadrat = (tacke[m].x - kruznica.cx)**2 + (tacke[m].y - kruznica.cy)**2;
+
+                            if (distKvadrat < kruznica.r2 - 1e-4) {
+                                jesuLiSveVan = false;
+                                break;
+                            }
+                        }
+
+                        if (jesuLiSveVan) {
+                            dodajDuz(i, j);
+                            dodajDuz(j, k);
+                            dodajDuz(k, i);
+                        }
+                    }
+                }
+            }
+        }
+
+        function iscrtaj() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 1;
+            for (let d of duzi) {
+                ctx.beginPath();
+                ctx.moveTo(d.p1.x, d.p1.y);
+                ctx.lineTo(d.p2.x, d.p2.y);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = 'black';
+            for (let i = 0; i < tacke.length; i++) {
+                ctx.beginPath();
+                ctx.arc(tacke[i].x, tacke[i].y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        iscrtaj();
+    </script>
+</body>
+</html>
